@@ -1,7 +1,8 @@
 import fetch from 'node-fetch';
 import * as fs from 'fs';
 // ,"acadiastore","adelphistore"
-const storeNames = ["academyofourladypeacestore","acadiastore","adelphistore"];
+//const storeNames = ["academyofourladypeacestore","acadiastore","adelphistore"];
+const storeNames = ["academyofourladypeacestore"];
 
 storeNames.forEach(function(strName,index){
     var storeName = strName; 
@@ -9,70 +10,62 @@ storeNames.forEach(function(strName,index){
     var J = 0;
     store_id.then(async function(strid){
         var strId = strid.storeId;
+        console.log('store id = ',strId);
         // get termId and programId
         var term_id = getTerm(strId);
-        wait(200);   
         await term_id.then(async function(termVal){
             var termId = termVal[0];
             var programId = termVal[1];
-            console.log(strId,termId,programId); 
+            console.log('term id = ',termId);
+            console.log('program id = ',programId);
             var department = getDaprtment(strId,termId);
-            wait(500);   
             var depName;
             var courseName;
             await department.then((value) => {
                 var dep = value.finalDDCSData.division[0].department;
-		    // save dep array in json filename will be bkstr_'+storeName+'_'+storeId+'_'+termId+'_department.json',data
-		    var depFile = JSON.stringify(dep);
+                // save dep array in json filename will be bkstr_'+storeName+'_'+storeId+'_'+termId+'_department.json',data
+                var depFile = JSON.stringify(dep);
                     fs.writeFile('./bkstr_deps/bkstr_'+storeName+'_'+strId+'_'+termId+'_department.json',depFile, function (err) {
                         if (err) throw err;
-                        console.log('Saved!');
+                        console.log('Department Saved');
                     });
-		        wait(300); 
                 var fullData = [];
                 var i = 0;
                 var j = 0;
-            	dep.forEach((val,index) => {
-                  	val.course.forEach((val2,index2)=>{
-            			courseName = val2.courseName;
-            			val2.section.forEach((val3,index3)=>{
-            				let section = val3.sectionName;
+                console.log('department = ',dep);
+                dep.forEach((val,index) => {
+                    depName = val.depName;
+                    val.course.forEach((val2,index2)=>{
+                        courseName = val2.courseName;
+                        val2.section.forEach((val3,index3)=>{
+                            let section = val3.sectionName;
                             let course = {"secondaryvalues":depName+"/"+courseName+"/"+section,"divisionDisplayName":"","departmentDisplayName":depName,"courseDisplayName":courseName,"sectionDisplayName":section};
-                            // await timeout(3000);
-                            // await new Promise(resolve => setTimeout(resolve,1000));
-                            // wait(1000);
-                            // console.log(course);
                             if(i<20){
                                 fullData.push(course);
                                 i++;
                             }else{
-				                // Create a function 
-				                J++;
+                                // Create a function 
+                                J++;
                                 // return;
                                 try{
                                     // get and store course data
+                                    console.log('IN Store Data Function');
                                     storeData(storeName,strId,termId,programId,depName,courseName,J,fullData);
-                                    var ran = (Math.random()*5) + 3;
-                                    console.log("waiting for:",ran," seconds");
-                                    wait(ran*1000);
                                     i=0;
                                     fullData = [];
-                                    // console.log("hello");
-                                }catch(err){
+                                    return false;
+                                } catch(err){
                                     console.log(err);
                                 }
                             }
-            			})
-            		})
-            	});
-		    if(i>0){
+                        })
+                    })
+                });
+            if(i>0){
                 // get and store course data
                 storeData(storeName,strId,termId,programId,depName,courseName,J,fullData);
-                var ran = (Math.random()*12) + 3;
-                console.log("waiting for:",ran," seconds");
-                wait(ran*1000);
             }
-		    // After for loop  check if i > 0 then you have to call getCourses for remianing course data and save it this is why i asked you to creat function under try  
+            // After for loop  check if i > 0 then you have to call getCourses for remianing course data and save it this is why i asked you to creat function under try  
             });
         })
     })
@@ -89,31 +82,34 @@ storeNames.forEach(function(strName,index){
 
 //get storeId from link of arrays.
 async function getStore(storeName) {
+    wait();
     const str =  await fetch(`https://svc.bkstr.com/store/config?storeName=${storeName}`, {
         method: 'GET',
         mode: 'cors',
         headers: {
             'Accept': 'application/json, text/plain, */*',
             'Content-Type': 'application/json',
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36',
+            'User-Agent': 'Mozilla/5.0',
         },
     })
+    
     const ret = await str.json();  
-    // console.log('store id');
     return ret;  
 }
 
 //get termId and programId from storeId
 async function getTerm(storeId) {
+    wait();
     const str =  await fetch(`https://svc.bkstr.com/courseMaterial/info?storeId=${storeId}`, {
         method: 'GET',
         mode: 'cors',
         headers: {
             'Accept': 'application/json, text/plain, */*',
             'Content-Type': 'application/json',
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36',
+            'User-Agent': 'Mozilla/5.0',
         },
-    })
+    });
+
     const ret = await str.json();  
     // console.log('term id and program id');
     var termId = ret.finalData?.campus[0]?.program[0]?.term[0]?.termId;
@@ -123,13 +119,14 @@ async function getTerm(storeId) {
 }
 
 async function getDaprtment(storeId,termId) {
+    wait();
 const d =  await fetch(`https://svc.bkstr.com/courseMaterial/courses?storeId=${storeId}&termId=${termId}`, {
     method: 'GET',
     mode: 'cors',
     headers: {
-		'Accept': 'application/json, text/plain, */*',
+        'Accept': 'application/json, text/plain, */*',
         'Content-Type': 'application/json',
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36',
+        'User-Agent': 'Mozilla/5.0',
         },
     })
     const ret = await d.json();  
@@ -139,39 +136,49 @@ const d =  await fetch(`https://svc.bkstr.com/courseMaterial/courses?storeId=${s
 }
 
 async function getCourses(storeId,termId,programId,fullData) {
+    // wait();
 const rest = await fetch(`https://svc.bkstr.com/courseMaterial/results?storeId=${storeId}&langId=-1&requestType=DDCSBrowse`, {
     method: 'POST',
     headers: {
-		'Accept': 'application/json, text/plain, */*',
+        'Accept': 'application/json, text/plain, */*',
         'Content-Type': 'application/json',
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36',
+        'User-Agent': 'Mozilla/5.0',
         },
-		body: '{"storeId":'+storeId+',"termId":'+termId+',"programId":'+programId+',"courses":'+fullData+'}'
+        body: '{"storeId":'+storeId+',"termId":'+termId+',"programId":'+programId+',"courses":'+fullData+'}'
     });
     const ret = await rest.json();   
     return ret;  
 }
 
 function wait(ms){
+    ms = ms || false;
+    if (!ms) {
+        ms = generateTimeStamp(3000, 10000);
+    }
     var start = new Date().getTime();
     var end = start;
     while(end < start + ms) {
-      end = new Date().getTime();
-   }
+        end = new Date().getTime();
+    }
+}
+
+function generateTimeStamp(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
 async function storeData(storeName,strId,termId,programId,depName,courseName,J,fullData){
     console.log("Sending 20-data of ",storeName,", ",depName,", ",courseName," and section send to get course and book details.");
-    // console.log(fullData);
-    var newData = JSON.stringify(fullData);
-    var getData = await getCourses(strId,termId,programId,newData);
-    getData.then((value)=>{
-        console.log('course details and books of given data.');
-        console.log(value);
-        var data = JSON.stringify(value);
+    //console.log('fullData',fullData);
+    const newData = JSON.stringify(fullData);
+    const getData = await getCourses(strId,termId,programId,newData);
+    await getData.then(function(value) {
+        console.log('course details and books of given data.', value);
+        const data = JSON.stringify(value);
         fs.writeFile('./bkstr/bkstr_'+storeName+'_'+termId+'_'+depName+'_'+courseName+'_'+J+'.json',data, function (err) {
-            if (err) throw err;
-            console.log('Saved!');
+            if (err) { 
+                throw err;
+            }
+            console.log('storeData Saved');
         });
     })
 }
