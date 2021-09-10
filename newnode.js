@@ -3,7 +3,7 @@ import * as fs from 'fs';
 // ,"acadiastore","adelphistore"
 //const storeNames = ["academyofourladypeacestore","acadiastore","adelphistore"];
 const storeNames = ["academyofourladypeacestore"];
-
+var store_promise = {};
 storeNames.forEach(function(strName,index){
     var storeName = strName; 
     var store_id = getStore(strName);
@@ -50,7 +50,7 @@ storeNames.forEach(function(strName,index){
                                 try{
                                     // get and store course data
                                     console.log('IN Store Data Function');
-                                    storeData(storeName,strId,termId,programId,depName,courseName,J,fullData);
+                                    storeData(storeName,strId,termId,programId,depName,courseName,J,fullData, store_promise);
                                     i=0;
                                     fullData = [];
                                     return false;
@@ -63,7 +63,7 @@ storeNames.forEach(function(strName,index){
                 });
             if(i>0){
                 // get and store course data
-                storeData(storeName,strId,termId,programId,depName,courseName,J,fullData);
+                storeData(storeName,strId,termId,programId,depName,courseName,J,fullData, store_promise);
             }
             // After for loop  check if i > 0 then you have to call getCourses for remianing course data and save it this is why i asked you to creat function under try  
             });
@@ -136,7 +136,7 @@ const d =  await fetch(`https://svc.bkstr.com/courseMaterial/courses?storeId=${s
 }
 
 async function getCourses(storeId,termId,programId,fullData) {
-    // wait();
+    wait();
 const rest = await fetch(`https://svc.bkstr.com/courseMaterial/results?storeId=${storeId}&langId=-1&requestType=DDCSBrowse`, {
     method: 'POST',
     headers: {
@@ -166,12 +166,12 @@ function generateTimeStamp(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-async function storeData(storeName,strId,termId,programId,depName,courseName,J,fullData){
+async function storeData(storeName,strId,termId,programId,depName,courseName,J,fullData, store_promise){
     console.log("Sending 20-data of ",storeName,", ",depName,", ",courseName," and section send to get course and book details.");
     //console.log('fullData',fullData);
     const newData = JSON.stringify(fullData);
-    const getData = await getCourses(strId,termId,programId,newData);
-    await getData.then(function(value) {
+    store_promise[J] = getCourses(strId,termId,programId,newData);
+    await store_promise[J].then(function(value) {
         console.log('course details and books of given data.', value);
         const data = JSON.stringify(value);
         fs.writeFile('./bkstr/bkstr_'+storeName+'_'+termId+'_'+depName+'_'+courseName+'_'+J+'.json',data, function (err) {
