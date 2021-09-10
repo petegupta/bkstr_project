@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
 import * as fs from 'fs';
 // ,"acadiastore","adelphistore"
-const storeNames = ["academyofourladypeacestore","acadiastore","adelphistore"];
+const storeNames[1] = ["academyofourladypeacestore","acadiastore","adelphistore"];
 
 storeNames.forEach(function(strName,index){
     var storeName = strName; 
@@ -23,18 +23,16 @@ storeNames.forEach(function(strName,index){
             await department.then((value) => {
                 var dep = value.finalDDCSData.division[0].department;
 		        // save dep array in json filename will be bkstr_'+storeName+'_'+storeId+'_'+termId+'_department.json',data
+		     	fs.writeFile('./bkstr_deps/bkstr_'+storeName+'_'+strId+'_'+termId+'__department.json', JSON.stringify(dep), function (err) { if (err) throw err;
+                        console.log('Saved!');
+                    	});
 		        wait(300); 
                 var fullData = [];
                 var i = 0;
                 var j = 0;
             	dep.forEach((val,index) => {
                     depName = val.depName;
-                    var depFile = JSON.stringify(val);
-                    fs.writeFile('./bkstr_deps/bkstr_'+storeName+'_'+strId+'_'+termId+'_'+depName+'.json',depFile, function (err) {
-                        if (err) throw err;
-                        console.log('Saved!');
-                    });
-            		val.course.forEach((val2,index2)=>{
+                  	val.course.forEach((val2,index2)=>{
             			courseName = val2.courseName;
             			val2.section.forEach((val3,index3)=>{
             				let section = val3.sectionName;
@@ -139,7 +137,6 @@ const d =  await fetch(`https://svc.bkstr.com/courseMaterial/courses?storeId=${s
     return ret;  
 }
 
-async function getCourses(storeId,termId,programId,fullData) {
 const rest = await fetch(`https://svc.bkstr.com/courseMaterial/results?storeId=${storeId}&langId=-1&requestType=DDCSBrowse`, {
     method: 'POST',
     headers: {
