@@ -2,7 +2,7 @@ import fetch from 'node-fetch';
 import * as fs from 'fs';
 // ,"acadiastore","adelphistore"
 //const storeNames = ["academyofourladypeacestore","acadiastore","adelphistore"];
-const storeNames = ["academyofourladypeacestore"];
+const storeNames = ["agnesscottstore"];
 var store_promise = {};
 storeNames.forEach(function(strName,index){
     var storeName = strName; 
@@ -62,6 +62,7 @@ storeNames.forEach(function(strName,index){
                     })
                 });
             if(i>0){
+                J++;
                 // get and store course data
                 storeData(storeName,strId,termId,programId,depName,courseName,J,fullData, store_promise);
             }
@@ -153,7 +154,7 @@ const rest = await fetch(`https://svc.bkstr.com/courseMaterial/results?storeId=$
 function wait(ms){
     ms = ms || false;
     if (!ms) {
-        ms = generateTimeStamp(3000, 10000);
+        ms = generateTimeStamp(5000, 20000);
     }
     var start = new Date().getTime();
     var end = start;
