@@ -5,6 +5,7 @@ import { exit } from 'process';
 //const storeNames = ["academyofourladypeacestore","acadiastore","adelphistore"];
 const storeNames = ['asumhstore'];
 //https://svc.bkstr.com/store/config?storeName=alcornstatestore
+const storeNames = ["agnesscottstore"];
 var store_promise = {};
 storeNames.forEach(function(strName,index){
     var storeName = strName; 
@@ -165,6 +166,7 @@ function wait(ms){
     ms = ms || false;
     if (!ms) {
         ms = generateTimeStamp(4000, 18000);
+        ms = generateTimeStamp(5000, 20000);
     }
     var start = new Date().getTime();
     var end = start;
