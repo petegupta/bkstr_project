@@ -54,10 +54,6 @@ const fileSys = require("fs");
 const { count } = require('console');
 csvToJsonData().fromFile("./bnck.csv").then(source => {
 
-1
-5
-8
-40
 
   cmdata.forEach(function(index,i){
         const row = getBlankRow();
