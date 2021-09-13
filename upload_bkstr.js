@@ -51,49 +51,72 @@ var len = cmdata.length;
 const csvToJsonData = require("csvtojson");
 const jsonToCsvData = require("json2csv").parse;
 const fileSys = require("fs");
+const { count } = require('console');
 csvToJsonData().fromFile("./bnck.csv").then(source => {
 
+1
+5
+8
+40
 
   cmdata.forEach(function(index,i){
-		let storeid 			= cmdata[i]['storeId']??'';
-		let storenumber 		= cmdata[i]['storeNumber']??'';
-
-		foreach courseSectionDTO()
-			let campusid			= cmdata[i]['courseSectionDTO'][j]['campusId']??'';
-			let programid			= cmdata[i]['courseSectionDTO'][j]['programId']??''; 
-			let termid				= cmdata[i]['courseSectionDTO'][j]['termId']??''; 
-			let division			= cmdata[i]['courseSectionDTO'][j]['division']??'';    	
-			let department			= cmdata[i]['courseSectionDTO'][j]['department']??''; 
-			let courseId			= cmdata[i]['courseSectionDTO'][j]['courseId']??''; 
-			let section
-			let storedisplayname
-			let termname
-			let termnumber
-			let programname
-			let campusname
-			let divisionname
-			let departmentname
-			let coursename
-			let sectionname
-			let schoolname
-			let bookstoreid
-			foreach courseMaterialResultsList()
-				let isbn			= cmdata[i]['courseSectionDTO'][j]['courseMaterialResultsList'][k]['isbn']??'';
-				let title
-				let edition
-				let author
-				let instructor
-				let publishercode
-				let publisher
-				let copyrightyear
-				let bookimage
-				let materialtype
-				let requirementtype
-				let pricerangedisplay
-				let productcatentryid
-				let cmid
-				let mtcid
-			}
+        const row = getBlankRow();
+        $row['storeid'] 			= cmdata[i]['storeId']??'';
+        $row['storenumber'] 		= cmdata[i]['storeNumber']??'';
+        if(count(courseSectionDTO) ==0)
+        {
+             createcsvrow($row);
+            //create row and initParseRuntime;
+        }
+        else
+        {
+            foreach courseSectionDTO()
+                $row['rowcampusid']			= cmdata[i]['courseSectionDTO'][j]['campusId']??'';
+                $row['programid			= cmdata[i]['courseSectionDTO'][j]['programId']??''; 
+                $row['termid				= cmdata[i]['courseSectionDTO'][j]['termId']??''; 
+                let division			= cmdata[i]['courseSectionDTO'][j]['division']??'';    	
+                let department			= cmdata[i]['courseSectionDTO'][j]['department']??''; 
+                let courseId			= cmdata[i]['courseSectionDTO'][j]['courseId']??''; 
+                let section
+                let storedisplayname
+                let termname
+                let termnumber
+                let programname
+                let campusname
+                let divisionname
+                let departmentname
+                let coursename
+                let sectionname
+                let schoolname
+                let bookstoreid
+                if(count(courseSectionDTO) ==0)
+                {
+                    createcsvrow($row);
+                    //create row and initParseRuntime;
+                }
+                else
+                {
+                    foreach courseMaterialResultsList()
+                        let isbn			= cmdata[i]['courseSectionDTO'][j]['courseMaterialResultsList'][k]['isbn']??'';
+                        let title
+                        let edition
+                        let author
+                        let instructor
+                        let publishercode
+                        let publisher
+                        let copyrightyear
+                        let bookimage
+                        let materialtype
+                        let requirementtype
+                        let pricerangedisplay
+                        let productcatentryid
+                        let cmid
+                        let mtcid
+                         //create row and initParseRuntime;
+                            createcsvrow($row);
+                    }
+                }
+            }
 		}
 
 
@@ -322,7 +345,8 @@ function getBlankRow()
 			},
 			"includEDMaterialFlag": false,
 			"titleSelectionDisabled": false
-		}, {
+		}, 
+        {
 			"rank": 16,
 			"cmId": "8152823973114579",
 			"mtcId": "23036769",
