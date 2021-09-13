@@ -1,6 +1,45 @@
 'use strict';
 const fs = require('fs');
-
+/*
+storeid
+campusid
+programid
+termid
+division
+department
+courseId
+section
+isbn
+title
+edition
+author
+instructor
+publishercode
+publisher
+copyrightyear
+bookimage
+materialtype
+requirementtype
+pricerangedisplay
+productcatentryid
+cmid
+mtcid
+storenumber
+storedisplayname
+termname
+termnumber
+programname
+campusname
+divisionname
+departmentname
+coursename
+sectionname
+schoolname
+bookstoreid
+created_on
+last_updated_on
+updated_by
+*/
 let rawdata = fs.readFileSync('data3.json');
 let student = JSON.parse(rawdata);
 var len = student.length;
