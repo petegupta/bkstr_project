@@ -6,13 +6,19 @@ const require = createRequire(import.meta.url);
 // json to csv modules
 const csvToJsonData = require("csvtojson");
 const jsonToCsvData = require("json2csv").parse;
-
-const storeNames = ["floridastore"]; // Enter your store name here which you want to scrape and go to line 83
+//stcloudstatestore	9
+const storeNames = ["stcloudstatestore"]; // Enter your store name here which you want to scrape and go to line 83
+var storeUrl = `https://www.bkstr.com/${storeNames}/home`
+const bookstoreID = "9";
+var storeIdHere ;
+const currentDate = new Date();
+const createdOn = currentDate.toISOString();
 const fetchData = async () => {
   try {
     for (let i = 0; i < storeNames.length; i++) {
       let storeName = storeNames[i];
       let strId = await getStore(storeName);
+      await waitRandomTime();
       let storeId = strId.storeId;
       let J = 0;
       if (typeof storeId == "undefined") {
@@ -21,6 +27,7 @@ const fetchData = async () => {
       }
       console.log(storeId);
       let term_id = await getTerm(storeId);
+      await waitRandomTime();
       for (let j = 0; j < term_id.length; j++) {
         console.log(term_id[j]);
         let termId = term_id[j].termId;
@@ -37,6 +44,7 @@ const fetchData = async () => {
           let depName;
           let courseName;
           let div = await getDepartment(storeId, termId, storeName);
+          await waitRandomTime();
           for (let c = 0; c < div.length; c++) {
             let department = div[c].department;
             if (typeof department == "undefined") {
@@ -80,7 +88,7 @@ const fetchData = async () => {
                   } else {
                     J++;
                     // First go to the bkstr folder and check the last modified file number at the last of the file name and accordingly set the value of in line 83 (J > value) and uncomment the line 83 and 100 do this only when blocked else keep 83 and 100 lines commented
-                    if (J > 75) {
+                    //if (J > 74) {
                       try {
                         // get and store course data
                         console.log("IN Store Data Function");
@@ -97,7 +105,7 @@ const fetchData = async () => {
                       } catch (err) {
                         console.log(err);
                       }
-                    }
+                    //}
                     k = 0;
                     fullData = [];
                   }
@@ -118,6 +126,7 @@ const fetchData = async () => {
               J,
               fullData
             );
+            await waitRandomTime();
           }
         }
       }
@@ -222,24 +231,6 @@ async function getCourses(storeId, termId, programId, fullData, J) {
   return ret;
 }
 
-function wait(ms) {
-  return;
-  ms = ms || false;
-  if (!ms) {
-    // ms = generateTimeStamp(20000, 30000);
-
-    ms = generateTimeStamp(2000, 4000);
-  }
-  var start = new Date().getTime();
-  var end = start;
-  while (end < start + ms) {
-    end = new Date().getTime();
-  }
-}
-
-function generateTimeStamp(min, max) {
-  return Math.floor(Math.random() * (max - min + 1) + min);
-}
 
 async function storeData(
   storeName,
@@ -275,8 +266,7 @@ async function storeData(
     console.log("you are blocked");
     process.exit(0);
   }
-  console.log("course details and books of given data.", store_data);
-  // const data = JSON.stringify(value);
+  
   fs.writeFile(
     "./bkstr/bkstr_" +
       storeName
@@ -324,11 +314,11 @@ async function storeData(
         let source2 = [];
         for (let i = 0; i < cmdata.length; i++) {
           const row = getBlankRow();
-          // console.log(val["storeId"]);
           row["storeid"] = cmdata[i].storeId;
           row["storenumber"] = cmdata[i].storeNumber;
           row["storedisplayname"] = cmdata[i].storeDisplayName;
-          // console.log(row);
+          row["created_on"] = createdOn;
+          storeIdHere = cmdata[i].storeId
           if (!cmdata[i].courseSectionDTO) {
             source.push(row);
             source2.push(row);
@@ -337,26 +327,21 @@ async function storeData(
             for (let j = 0; j < courseSection.length; j++) {
               const row1 = getBlankRow();
               row1["storeid"] = cmdata[i].storeId;
+              storeIdHere = cmdata[i].storeId
               row1["storenumber"] = cmdata[i].storeNumber;
               row1["storedisplayname"] = cmdata[i].storeDisplayName;
-              row1["termid"] = courseSection[j].termId;
               row1["termname"] = courseSection[j].termName;
-              row1["termnumber"] = courseSection[j].termNumber;
-              row1["programid"] = courseSection[j].programId;
-              row1["programname"] = courseSection[j].programName;
-              row1["campusid"] = courseSection[j].campusId;
               row1["campusname"] = courseSection[j].campusName;
               row1["department"] = courseSection[j].department;
               row1["departmentname"] = courseSection[j].departmentName;
-              row1["division"] = courseSection[j].division;
-              row1["divisionname"] = courseSection[j].divisionName;
-              row1["courseid"] = courseSection[j].courseId;
               row1["coursename"] = courseSection[j].courseName;
               row1["section"] = courseSection[j].section;
               row1["sectionname"] = courseSection[j].sectionName;
               row1["instructor"] = courseSection[j].instructor;
               row1["schoolname"] = courseSection[j].institutionName;
-              // console.log(row);
+              row1["store_url"] = storeUrl;
+              row1["bookstoreid"] = bookstoreID;
+              row1["created_on"] = createdOn;
               if (!courseSection[j].courseMaterialResultsList) {
                 source.push(row1);
                 source2.push(row1);
@@ -366,27 +351,18 @@ async function storeData(
                 for (let k = 0; k < courseMaterialResults.length; k++) {
                   const row2 = getBlankRow();
                   row2["storeid"] = cmdata[i].storeId;
+                  storeIdHere = cmdata[i].storeId
                   row2["storenumber"] = cmdata[i].storeNumber;
                   row2["storedisplayname"] = cmdata[i].storeDisplayName;
-                  row2["termid"] = courseSection[j].termId;
                   row2["termname"] = courseSection[j].termName;
-                  row2["termnumber"] = courseSection[j].termNumber;
-                  row2["programid"] = courseSection[j].programId;
-                  row2["programname"] = courseSection[j].programName;
-                  row2["campusid"] = courseSection[j].campusId;
                   row2["campusname"] = courseSection[j].campusName;
                   row2["department"] = courseSection[j].department;
                   row2["departmentname"] = courseSection[j].departmentName;
-                  row2["division"] = courseSection[j].division;
-                  row2["divisionname"] = courseSection[j].divisionName;
-                  row2["courseid"] = courseSection[j].courseId;
                   row2["coursename"] = courseSection[j].courseName;
                   row2["section"] = courseSection[j].section;
                   row2["sectionname"] = courseSection[j].sectionName;
                   row2["instructor"] = courseSection[j].instructor;
                   row2["schoolname"] = courseSection[j].institutionName;
-                  row2["cmid"] = courseMaterialResults[k].cmId;
-                  row2["mtcid"] = courseMaterialResults[k].mtcId;
                   row2["bookimage"] = courseMaterialResults[k].bookImage;
                   row2["title"] = courseMaterialResults[k].title;
                   row2["edition"] = courseMaterialResults[k].edition;
@@ -398,12 +374,13 @@ async function storeData(
                   row2["publisher"] = courseMaterialResults[k].publisher;
                   row2["publishercode"] =
                     courseMaterialResults[k].publisherCode;
-                  row2["productcatentryid"] =
-                    courseMaterialResults[k].productCatentryId;
                   row2["copyrightyear"] =
                     courseMaterialResults[k].copyRightYear || "";
                   row2["pricerangedisplay"] =
                     courseMaterialResults[k].priceRangeDisplay;
+                  row2["store_url"] = storeUrl;
+                  row2["bookstoreid"] = bookstoreID;
+                  row2["created_on"] = createdOn;
                   source.push(row2);
                   source2.push(row2);
                 }
@@ -413,28 +390,20 @@ async function storeData(
         }
         const csv = jsonToCsvData(source, {
           fields: [
+            "bookrow_id",
+            "bookstoreid",
             "storeid",
             "storenumber",
             "storedisplayname",
-            "termid",
             "termname",
-            "termnumber",
-            "programid",
-            "programname",
-            "campusid",
             "campusname",
             "department",
             "departmentname",
-            "division",
-            "divisionname",
-            "courseid",
             "coursename",
             "section",
             "sectionname",
             "instructor",
             "schoolname",
-            "cmid",
-            "mtcid",
             "bookimage",
             "title",
             "edition",
@@ -444,12 +413,18 @@ async function storeData(
             "requirementtype",
             "publisher",
             "publishercode",
-            "productcatentryid",
             "copyrightyear",
             "pricerangedisplay",
+            "booklink",
+            "store_url",
+            "user_guid",
+            "course_codes",
+            "created_on",
+            "last_updated_on",
+            "file_code",
           ],
         });
-        fs.writeFileSync("./csv/bkstr.csv", csv);
+        fs.appendFileSync(`./csv/${storeNames}_${storeIdHere}.csv`, csv);
         console.log("saved json data in csv");
       });
   }
@@ -466,39 +441,53 @@ function getHeaderString() {
 
 function getBlankRow() {
   return {
-    storeid: "",
-    storenumber: "",
-    storedisplayname: "",
-    termid: "",
-    termname: "",
-    termnumber: "",
-    programid: "",
-    programname: "",
-    campusid: "",
-    campusname: "",
-    department: "",
-    departmentname: "",
-    division: "",
-    divisionname: "",
-    courseid: "",
-    coursename: "",
-    section: "",
-    sectionname: "",
-    instructor: "",
-    schoolname: "",
-    cmid: "",
-    mtcid: "",
-    bookimage: "",
-    title: "",
-    edition: "",
-    author: "",
-    isbn: "",
-    materialtype: "",
-    requirementtype: "",
-    publisher: "",
-    publishercode: "",
-    productcatentryid: "",
-    copyrightyear: "",
-    pricerangedisplay: "",
-  };
+      bookrow_id: "",
+      bookstoreid: "",
+      storeid: "",
+      storenumber: "",
+      storedisplayname: "",
+      termname: "",
+      campusname: "",
+      department: "",
+      departmentname: "",
+      coursename: "",
+      section: "",
+      sectionname: "",
+      instructor: "",
+      schoolname: "",
+      bookimage: "",
+      title: "",
+      edition: "",
+      author: "",
+      isbn: "",
+      materialtype: "",
+      requirementtype: "",
+      publisher: "",
+      publishercode: "",
+      copyrightyear: "",
+      pricerangedisplay: "",
+      booklink: "",
+      store_url: "",
+      user_guid: "",
+      course_codes: "",
+      created_on: "",
+      last_updated_on: "",
+      file_code: "",
+  }
+}
+
+
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function waitRandomTime() {
+  // Generate a random wait time between 1 to 5 seconds (in milliseconds)
+  const minDelay = 2000; // 1 second = 1000 milliseconds
+  const maxDelay = 3000; // 5 seconds = 5000 milliseconds
+  const randomDelay = Math.random() * (maxDelay - minDelay) + minDelay;
+  
+  // Use the 'delay' function to introduce the delay
+  await delay(randomDelay);
+  
 }
