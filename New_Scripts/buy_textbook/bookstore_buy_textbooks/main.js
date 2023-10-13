@@ -166,7 +166,7 @@ async function getDept(campusId, termId) {
         if (err) {
           reject(`XML parsing error: ${err.message}`);
         }
-        const departments = result.departments.department.map(department => ({
+        const departments = result?.departments?.department?.map(department => ({
           id: department.$.id,
           abrev: department.$.abrev,
           name: department.$.name
@@ -198,7 +198,7 @@ async function getCourse(deptId, termId) {
         if (err) {
           reject(`XML parsing error: ${err.message}`);
         }
-        const coursesArray = result.courses.course.map(course => ({
+        const coursesArray = result?.courses?.course?.map(course => ({
           id: course.$.id,
           name: course.$.name,
         }));
@@ -229,7 +229,7 @@ async function getSection(courseId, termId) {
         if (err) {
           reject(`XML parsing error: ${err.message}`);
         }
-        const sectionsArray = result.sections.section.map(section => ({
+        const sectionsArray = result?.sections?.section?.map(section => ({
           id: section.$.id,
           name: section.$.name,
           instructor: section.$.instructor
