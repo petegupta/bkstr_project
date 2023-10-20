@@ -2,12 +2,12 @@ import fetch from 'node-fetch';
 import cheerio from 'cheerio';
 import ObjectsToCsv from "objects-to-csv";
 
-let storeName = 'kishwaukee';
-var bookstoreid = "";
+let storeName = 'grinnell';
+var bookstoreid = "2900";
 var storeid = "";
 var storeDispName = storeName;
 var termname = "Fall 2023";
-var campusname = "";
+var campusname = "Grinnell College";
 
 let terms = [];
 var row = [];
@@ -101,109 +101,95 @@ async function fetchData(csrfToken, cookies) {
                     if (!Courses) {
                         console.log("No courses");
                     } else {
-                        for (let c = 0; c < Courses.length; c++) {
-                            courseCode = Courses[c].id ? Courses[c].id : "";
-                            courseName = Courses[c].name ? Courses[c].name : "";
-                            let Coursesid = Courses[c].id;
-                            // console.log(Coursesid);
-                            // let section = await getSection(terms[t], departmentsid, Coursesid, csrfToken, cookies);
-                            // console.log(section);
+                        for (let s = 0; s < sectionIds.length; s++) {
+                            sectionData = sectionIds[s]
+                            console.log(sectionData);
                             await delay();
-                            if (!sectionIds) {
-                                console.log("No Section Found");
+                            let bookdetails = await getBooksDetails(sectionData);
+                            try {
+                                const html = bookdetails;
+                                const $ = cheerio.load(html);
+                                // Find the script containing JSON data
+                                const script = $('script').filter((index, element) => {
+                                    return $(element).html().includes('var sections = new Verba.Compare.Collections.Sections');
+                                });
 
-                            } else {
-                                for (let s = 0; s < sectionIds.length; s++) {
-                                    sectionData = sectionIds[s]
-                                    console.log(sectionData);
-                                    await delay();
-                                    let bookdetails = await getBooksDetails(sectionData);
-                                    try {
-                                        const html = bookdetails;
-                                        const $ = cheerio.load(html);
-                                        // Find the script containing JSON data
-                                        const script = $('script').filter((index, element) => {
-                                            return $(element).html().includes('var sections = new Verba.Compare.Collections.Sections');
-                                        });
+                                if (script.length) {
+                                    // Extract the JSON data
+                                    // Initialize an empty array to store book information
+                                    const jsonScriptContent = script.html().trim();
+                                    const startIndex = jsonScriptContent.indexOf('Sections(') + 9;
+                                    const endIndex = jsonScriptContent.lastIndexOf(']') + 1;
+                                    const jsonData = jsonScriptContent.substring(startIndex, endIndex);
+                                    const newjson = JSON.parse(jsonData);
+                                    // console.log(jsonData);
+                                    const bookInformation = [];
 
-                                        if (script.length) {
-                                            // Extract the JSON data
-                                            // Initialize an empty array to store book information
-                                            const jsonScriptContent = script.html().trim();
-                                            const startIndex = jsonScriptContent.indexOf('Sections(') + 9;
-                                            const endIndex = jsonScriptContent.lastIndexOf(']') + 1;
-                                            const jsonData = jsonScriptContent.substring(startIndex, endIndex);
-                                            const newjson = JSON.parse(jsonData);
-                                            // console.log(jsonData);
-                                            const bookInformation = [];
-
-                                            // Loop through the data and extract book information
-                                            newjson.forEach((course) => {
-                                                const inst = course.instructor;
-                                                if (course.books) {
-                                                    course.books.forEach((book) => {
-                                                        bookName = book.title;
-                                                        author = book.author;
-                                                        isbn = book.isbn;
-                                                        price = book.offers && book.offers[0] ? book.offers[0].total : null;
-                                                        bookRequired = book.required;
-                                                        bookImg = book.cover_image_url;
-                                                        instructorName = inst;
+                                    // Loop through the data and extract book information
+                                    newjson.forEach((course) => {
+                                        const inst = course.instructor;
+                                        if (course.books) {
+                                            course.books.forEach((book) => {
+                                                bookName = book.title;
+                                                author = book.author;
+                                                isbn = book.isbn;
+                                                price = book.offers && book.offers[0] ? book.offers[0].total : null;
+                                                bookRequired = book.required;
+                                                bookImg = book.cover_image_url;
+                                                instructorName = inst;
 
 
-                                                        row.push({
-                                                            bookrow_id: "",
-                                                            bookstoreid: bookstoreid,
-                                                            storeid: storeid,
-                                                            storenumber: "",
-                                                            storedisplayname: storeDispName,
-                                                            termname: termname,
-                                                            campusname: campusname,
-                                                            department: deptCode,
-                                                            departmentname: deptName,
-                                                            coursename: courseName,
-                                                            section: sectionData,
-                                                            sectionname: sectionName,
-                                                            instructor: instructorName,
-                                                            schoolname: campusname,
-                                                            bookimage: bookImg,
-                                                            title: bookName,
-                                                            edition: "",
-                                                            author: author,
-                                                            isbn: isbn,
-                                                            materialtype: "",
-                                                            requirementtype: bookRequired,
-                                                            publisher: "",
-                                                            publishercode: "",
-                                                            copyrightyear: "",
-                                                            pricerangedisplay: price,
-                                                            booklink: "",
-                                                            store_url: store_url,
-                                                            user_guid: "",
-                                                            course_codes: "",
-                                                            created_on: dateTime,
-                                                            last_updated_on: dateTime,
-                                                            file_code: ""
-                                                        })
-                                                    });
-
-                                                    CsvWriter(row)
-                                                    row = [];
-                                                }
+                                                row.push({
+                                                    bookrow_id: "",
+                                                    bookstoreid: bookstoreid,
+                                                    storeid: storeid,
+                                                    storenumber: "",
+                                                    storedisplayname: storeDispName,
+                                                    termname: termname,
+                                                    campusname: campusname,
+                                                    department: deptCode,
+                                                    departmentname: deptName,
+                                                    coursename: courseName,
+                                                    section: sectionData,
+                                                    sectionname: sectionName,
+                                                    instructor: instructorName,
+                                                    schoolname: campusname,
+                                                    bookimage: bookImg,
+                                                    title: bookName,
+                                                    edition: "",
+                                                    author: author,
+                                                    isbn: isbn,
+                                                    materialtype: "",
+                                                    requirementtype: bookRequired,
+                                                    publisher: "",
+                                                    publishercode: "",
+                                                    copyrightyear: "",
+                                                    pricerangedisplay: price,
+                                                    booklink: "",
+                                                    store_url: store_url,
+                                                    user_guid: "",
+                                                    course_codes: "",
+                                                    created_on: dateTime,
+                                                    last_updated_on: dateTime,
+                                                    file_code: ""
+                                                })
                                             });
 
-
-
-                                        } else {
-                                            console.error('JSON data not found in the HTML for section ID: ' + sectionData);
+                                            CsvWriter(row)
+                                            row = [];
                                         }
-                                    } catch (error) {
-                                        console.error('Error parsing JSON:', error);
-                                    }
+                                    });
 
 
+
+                                } else {
+                                    console.error('JSON data not found in the HTML for section ID: ' + sectionData);
                                 }
+                            } catch (error) {
+                                console.error('Error parsing JSON:', error);
                             }
+
+
                         }
                     }
                 }
@@ -328,12 +314,8 @@ async function getBooksDetails(sectionId) {
             Referer: store_url,
             'Sec-Fetch-Mode': 'cors',
         };
-        let response = await fetch(
-            `https://${storeName}.verbacompare.com/comparison?id=${sectionId}`, {
-                method: "GET",
-                headers: headers,
-            }
-        );
+        const url = `https://${storeName}.verbacompare.com/comparison?id=${sectionId}`;
+        const response = await fetchWithRetry(url, headers);
         bookdetails = await response.text();
     } catch (error) {
         console.log("Error fetching bookdetails", error);
@@ -384,4 +366,29 @@ function ldelay() {
             resolve();
         }, randomTime);
     });
+}
+async function fetchWithRetry(url, headers) {
+    try {
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: headers,
+        });
+
+        if (response.status === 429) {
+            // If a 429 error is received, wait for a while and then retry
+            console.log('Received a 429 error. Retrying after a delay...');
+            await ldelay() // Wait for 5 seconds (adjust the delay as needed)
+            return fetchWithRetry(url, headers); // Retry the request
+        }
+
+        if (!response.ok) {
+            throw new Error(`Request failed with status ${response.status}`);
+        }
+
+        return response;
+    } catch (error) {
+        console.error('Error in fetchWithRetry:', error);
+        await ldelay();
+        throw error;
+    }
 }

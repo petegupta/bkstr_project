@@ -2,8 +2,8 @@ import fetch from 'node-fetch';
 import cheerio from 'cheerio';
 import ObjectsToCsv from "objects-to-csv";
 
-let storeName = 'kishwaukee';
-var bookstoreid = "3004";
+let storeName = 'missouristate';
+var bookstoreid = "missouristate";
 var storeid = "";
 var storeDispName = storeName;
 var termname = "Fall 2023";
@@ -96,7 +96,7 @@ async function fetchData(csrfToken, cookies) {
                             courseCode = Courses[c].id ? Courses[c].id : "";
                             courseName = Courses[c].name ? Courses[c].name : "";
                             let Coursesid = Courses[c].id;
-                            console.log(Coursesid);
+                            // console.log(Coursesid);
                             let section = await getSection(terms[t], departmentsid, Coursesid, csrfToken, cookies);
                             // console.log(section);
                             await delay();
@@ -321,12 +321,8 @@ async function getBooksDetails(sectionId) {
             Referer: store_url,
             'Sec-Fetch-Mode': 'cors',
         };
-        let response = await fetch(
-            `https://${storeName}.verbacompare.com/comparison?id=${sectionId}`, {
-                method: "GET",
-                headers: headers,
-            }
-        );
+        const url = `https://${storeName}.verbacompare.com/comparison?id=${sectionId}`;
+        const response = await fetchWithRetry(url, headers);
         bookdetails = await response.text();
     } catch (error) {
         console.log("Error fetching bookdetails", error);
@@ -377,4 +373,30 @@ function ldelay() {
             resolve();
         }, randomTime);
     });
+}
+
+async function fetchWithRetry(url, headers) {
+    try {
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: headers,
+        });
+
+        if (response.status === 429) {
+            // If a 429 error is received, wait for a while and then retry
+            console.log('Received a 429 error. Retrying after a delay...');
+            await ldelay() // Wait for 5 seconds (adjust the delay as needed)
+            return fetchWithRetry(url, headers); // Retry the request
+        }
+
+        if (!response.ok) {
+            throw new Error(`Request failed with status ${response.status}`);
+        }
+
+        return response;
+    } catch (error) {
+        console.error('Error in fetchWithRetry:', error);
+        await ldelay();
+        throw error;
+    }
 }
