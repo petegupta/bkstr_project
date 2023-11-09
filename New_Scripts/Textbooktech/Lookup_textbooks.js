@@ -1,12 +1,12 @@
 import puppeteer from "puppeteer";
 import ObjectsToCsv from "objects-to-csv";
 
-var bookstoreid = "3100";
+var bookstoreid = "";
 var storeid = "";
 var storeDispName = "";
 var termname = "Fall 2023";
-var campusname = "University of Charleston";
-var store_url = "https://atlm.textbooktech.com/student";
+var campusname = "";
+var store_url = "https://nwc.textbooktech.com/";
 
 var row = [];
 
@@ -32,14 +32,18 @@ var allSection = "";
 async function main() {
     const browser = await puppeteer.launch({ headless: false });
     const page = await browser.newPage();
+    await page.setViewport({ width: 1200, height: 800 });
 
     try {
         await page.goto(store_url); // Replace with your target URL
         await page.waitForTimeout(2000);
-        await page.setViewport({ width: 1200, height: 800 });
 
-        await page.click('a[href="#textbook-lookup-course"]');
-        await page.waitForTimeout(2000);
+        const Element = await page.$('a[href="#textbook-lookup-course"]');
+        if (Element) {
+
+            await page.click('a[href="#textbook-lookup-course"]');
+            await page.waitForTimeout(2000);
+        }
 
         await page.waitForSelector("#lookup_department_0", { visible: true });
         const depoptions = await page.evaluate(() => {
@@ -53,8 +57,6 @@ async function main() {
         for (let i = 1; i < depoptions.length; i++) {
             // Perform any actions with the selected option here
             try {
-                deptName = depoptions[i].split('-')[0].trim();
-                console.log("departmentName: " + deptName + " | Loop: " + i);
                 await page.click("#lookup_department_0");
                 await page.waitForTimeout(1000);
                 await page.keyboard.press("ArrowDown");
@@ -111,12 +113,10 @@ async function main() {
 
                         await page.waitForTimeout(4000);
                         try {
-
-                            price = await page.$eval('span[itemprop="price"]', (element) => element.textContent.trim());
-                            bookName = await page.$eval('.product-info h3', (element) => element.textContent.trim());
-                            bookRequired = await page.$eval('.product-required', (element) => element.textContent.trim());
-                            bookImg = await page.$eval('.product-page-image img', (element) => element.getAttribute('src'));
-                            bookRequired = await page.$eval('.product-required', (element) => element.textContent.trim());
+                            price = await page.$eval('span[itemprop="price"]', (element) => element ? element.textContent.trim() : " ");
+                            bookName = await page.$eval('.product-info h3', (element) => element ? element.textContent.trim() : " ");
+                            bookRequired = await page.$eval('.product-required', (element) => element ? element.textContent.trim() : " ");
+                            bookImg = await page.$eval('.product-page-image img', (element) => element ? element.getAttribute('src') : " ");
                             const productAttributes = await page.$$eval('.product-attributes .standard-attribute', (elements) => {
                                 return elements.map((element) => {
                                     const key = element.querySelector('strong').textContent.replace(':', '').trim();
@@ -131,6 +131,17 @@ async function main() {
                             edition = (productAttributes.find(attr => attr.key === 'Edition') || {}).value || '';
                             isbn = (productAttributes.find(attr => attr.key === 'ISBN') || {}).value || '';
 
+
+                            const courseCode = await page.$eval('.course-info div', (element) => {
+                                return element.textContent;
+                            });
+
+                            // Split the text using "-"
+                            const parts = courseCode.split('-');
+
+                            // Get the third part (ACCT)
+                            deptName = parts[2].trim();
+                            console.log("departmentName: " + deptName);
 
                             row.push({
                                 bookrow_id: "",
@@ -169,7 +180,7 @@ async function main() {
                             CsvWriter(row)
                             row = [];
                         } catch (error) {
-                            console.log("Bookdetails: " + error);
+                            console.log("NO Book Found: " + error);
                         }
 
                         await page.goBack();
