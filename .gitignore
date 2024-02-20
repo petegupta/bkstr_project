@@ -25,5 +25,6 @@
 /test.txt
 /testbnck.csv
 /email_format/node_modules
+/hunter/node_modules
 /email_format/package.json
 /email_format/package-lock.json
