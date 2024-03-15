@@ -70,3 +70,12 @@ export function writeCSV(data, fileName = 'output.csv') {
         console.error('Error writing CSV file:', error);
     }
 }
+(async() => {
+    let csv_data = await readCSV('../../hunter/new_instructor_list_pending.csv');
+    csv_data = removeDuplicates(csv_data, 'email');
+    for (let index = 0; index < csv_data.length; index++) {
+        const element = csv_data[index];
+        let new_data = [element.org_url, element.email, element.name, element.department, element.position];
+        writeCSV(new_data, '../../hunter/new_instructor_list.csv');
+    }
+})();

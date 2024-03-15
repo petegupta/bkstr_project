@@ -20,7 +20,7 @@ async function fetchEmailData(domain) {
 
 (async () => {
     const fileName = 'sample.csv';
-    const output_file = 'hunter_data5.csv';
+    const output_file = 'new_instructor_list_pending.csv';
     const records = await readCSV(fileName);
     for (let index = 0; index < records.length; index++) {
         const record = records[index];
