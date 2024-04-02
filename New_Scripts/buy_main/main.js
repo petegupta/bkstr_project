@@ -3,7 +3,7 @@ import cheerio from 'cheerio'
 import {getXmlResponse,getAllCourse,getAllSection,getBooks} from './main1.js'
 import ObjectsToCsv from "objects-to-csv";
 
-const bookstoreName = "columbustech";
+const bookstoreName = "msun";
 const bookstoreId = "2879";
 
 var campusName;
@@ -69,18 +69,12 @@ async function getBookData(){
                             row.push({
                                 bookrow_id: "",
                                 bookstoreid: bookstoreId,
-                                storeid: "",
-                                storenumber:"", 
-                                storedisplayname: bookstoreName,
-                                termname: termName,
+                                termname: "spring-24",
                                 campusname: campusName,
-                                department: "",
                                 departmentname: deptName,
                                 coursename: courseName,
-                                section: "",
                                 sectionname: sectionName,
                                 instructor: instructorName,
-                                schoolname: campusName,
                                 bookimage: "",
                                 title: bookTitle,
                                 edition: bookEdition,
@@ -89,16 +83,15 @@ async function getBookData(){
                                 materialtype: "",
                                 requirementtype: bookReq,
                                 publisher: bookPublisher,
-                                publishercode: "",
                                 copyrightyear: "",
                                 pricerangedisplay: priceNew,
                                 booklink: "",
-                                store_url: storeUrl,
                                 user_guid: "",
                                 course_codes: "",
                                 created_on: dateTime,
                                 last_updated_on: dateTime,
-                                file_code: ""
+                                file_code: "",
+                                title_id: "",
                             })
                             CsvWriter(row);
                             row = [];

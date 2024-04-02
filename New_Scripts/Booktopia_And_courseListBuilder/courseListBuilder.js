@@ -16,10 +16,10 @@ collectedData = JSON.parse(storedData);
 
 //values we need to insert
 const bookStoreId = 3003;
-const storeDispName = "Wayland University Store";;
-const store_url = "https://bookstore.wbu.edu/booklist";
-const schoolCampusName = "Wayland Baptist University";
-const storeFileName = "wbu";
+const storeDispName = "Skidmore College";;
+const store_url = "https://www.skidmoreshop.com/courselistbuilder";
+const schoolCampusName = "Skidmore College";
+const storeFileName = "skidmoreshop";
 function collectData() {
     const courseDivs = document.querySelectorAll('div.course');
 
@@ -33,19 +33,20 @@ function collectData() {
       
             // Add your custom fields here
         const customFields = {
+            bookrow_id:"",
             bookstoreid:bookStoreId,
-            storeid:"",
-            storenumber: "",
-            storedisplayname: storeDispName,
-            termname:terms,
+            // storeid:"",
+            // storenumber: "",
+            // storedisplayname: storeDispName,
+            termname:"spring-24",
             campusname:schoolCampusName,
-            department: "",
+            // department: "",
             departmentname: departmentName,
             coursename: courseName,
-            section: "",
+            // section: "",
             sectionname: sectionName,
             instructor: facultyName,
-            schoolname: schoolCampusName,
+            // schoolname: schoolCampusName,
             bookimage: "",
             title:departmentName,
             edition:"",
@@ -54,16 +55,17 @@ function collectData() {
             materialtype: "",
             requirementtype: requirementType,
             publisher: "",
-            publishercode: "",
+            // publishercode: "",
             copyrightyear: "",
             pricerangedisplay: "",
             booklink: "",
-            store_url,
+            // store_url,
             user_guid: "",
             course_codes: "",
             created_on: dateTime,
             last_updated_on: dateTime,
-            file_code: ""
+            file_code: "",
+            title_id: ""
             };
       
         // Push the object to the main array

@@ -4,7 +4,7 @@ import ObjectsToCsv from 'objects-to-csv';
 var bookstoreid = "3653";
 var storeid = "";
 var storeDispName = "";
-var termname = "Fall 2023";
+var termname = "spring-24";
 var campusname = "Cisco College";
 var storeurl = "https://www.ciscocollegebookstore.com/SelectTermDept";
 
@@ -44,7 +44,7 @@ var sectItems;
 
 
 const main = async() => {
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({headless:false});
     const page = await browser.newPage();
 
     try {
@@ -264,18 +264,18 @@ const main = async() => {
                                             row = {
                                                 bookrow_id: "",
                                                 bookstoreid: bookstoreid,
-                                                storeid: storeid,
-                                                storenumber: "",
-                                                storedisplayname: storeDispName,
+                                                // storeid: storeid,
+                                                // storenumber: "",
+                                                // storedisplayname: storeDispName,
                                                 termname: termname,
                                                 campusname: campusname,
-                                                department: deptCode,
+                                                // department: deptCode,
                                                 departmentname: deptName,
                                                 coursename: courseName,
-                                                section: section,
+                                                // section: section,
                                                 sectionname: "",
                                                 instructor: instructorName[i],
-                                                schoolname: campusname,
+                                                // schoolname: campusname,
                                                 bookimage: bookImg[i],
                                                 title: bookName[i],
                                                 edition: edition[i],
@@ -284,16 +284,17 @@ const main = async() => {
                                                 materialtype: "",
                                                 requirementtype: bookRequired[i],
                                                 publisher: publisherName[i],
-                                                publishercode: "",
+                                                // publishercode: "",
                                                 copyrightyear: pubDate[i],
                                                 pricerangedisplay: price[i],
                                                 booklink: allSection,
-                                                store_url: storeurl,
+                                                // store_url: storeurl,
                                                 user_guid: "",
                                                 course_codes: "",
                                                 created_on: dateTime,
                                                 last_updated_on: dateTime,
-                                                file_code: ""
+                                                file_code: "",
+                                                title_id: "",
                                             };
 
                                             rows.push(row);

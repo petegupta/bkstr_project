@@ -72,18 +72,12 @@ async function getBookData() {
             row.push({
               bookrow_id: "",
               bookstoreid: bookstoreId,
-              storeid: "",
-              storenumber:"", 
-              storedisplayname: storeName,
-              termname: termName,
+              termname: "Spring-24",
               campusname: campusName,
-              department: "",
               departmentname: deptName,
               coursename: courseName,
-              section: "",
               sectionname: sectionName,
               instructor: instructorName,
-              schoolname: campusName,
               bookimage: "",
               title: bookData[book].title,
               edition: bookData[book].edition,
@@ -92,16 +86,15 @@ async function getBookData() {
               materialtype: "",
               requirementtype: "",
               publisher: bookData[book].publisher,
-              publishercode: "",
               copyrightyear: "",
               pricerangedisplay: bookData[book].price,
               booklink: "",
-              store_url: storeUrl,
               user_guid: "",
               course_codes: "",
               created_on: dateTime,
               last_updated_on: dateTime,
-              file_code: ""
+              file_code: "",
+              title_id: "",
             })
             CsvWriter(row)
             row = [];

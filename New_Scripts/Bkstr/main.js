@@ -330,7 +330,7 @@ async function storeData(
               storeIdHere = cmdata[i].storeId
               row1["storenumber"] = cmdata[i].storeNumber;
               row1["storedisplayname"] = cmdata[i].storeDisplayName;
-              row1["termname"] = courseSection[j].termName;
+              row1["termname"] = "spring-24";
               row1["campusname"] = courseSection[j].campusName;
               row1["department"] = courseSection[j].department;
               row1["departmentname"] = courseSection[j].departmentName;
@@ -354,7 +354,7 @@ async function storeData(
                   storeIdHere = cmdata[i].storeId
                   row2["storenumber"] = cmdata[i].storeNumber;
                   row2["storedisplayname"] = cmdata[i].storeDisplayName;
-                  row2["termname"] = courseSection[j].termName;
+                  row2["termname"] = "spring-24";
                   row2["campusname"] = courseSection[j].campusName;
                   row2["department"] = courseSection[j].department;
                   row2["departmentname"] = courseSection[j].departmentName;
@@ -392,18 +392,18 @@ async function storeData(
           fields: [
             "bookrow_id",
             "bookstoreid",
-            "storeid",
-            "storenumber",
-            "storedisplayname",
+            // "storeid",
+            // "storenumber",
+            // "storedisplayname",
             "termname",
             "campusname",
-            "department",
+            // "department",
             "departmentname",
             "coursename",
-            "section",
+            // "section",
             "sectionname",
             "instructor",
-            "schoolname",
+            // "schoolname",
             "bookimage",
             "title",
             "edition",
@@ -412,16 +412,17 @@ async function storeData(
             "materialtype",
             "requirementtype",
             "publisher",
-            "publishercode",
+            // "publishercode",
             "copyrightyear",
             "pricerangedisplay",
             "booklink",
-            "store_url",
+            // "store_url",
             "user_guid",
             "course_codes",
             "created_on",
             "last_updated_on",
             "file_code",
+            "title_id",
           ],
         });
         fs.appendFileSync(`./csv/${storeNames}_${storeIdHere}.csv`, csv);
@@ -443,18 +444,18 @@ function getBlankRow() {
   return {
       bookrow_id: "",
       bookstoreid: "",
-      storeid: "",
-      storenumber: "",
-      storedisplayname: "",
+      // storeid: "",
+      // storenumber: "",
+      // storedisplayname: "",
       termname: "",
       campusname: "",
-      department: "",
+      // department: "",
       departmentname: "",
       coursename: "",
-      section: "",
+      // section: "",
       sectionname: "",
       instructor: "",
-      schoolname: "",
+      // schoolname: "",
       bookimage: "",
       title: "",
       edition: "",
@@ -463,16 +464,17 @@ function getBlankRow() {
       materialtype: "",
       requirementtype: "",
       publisher: "",
-      publishercode: "",
+      // publishercode: "",
       copyrightyear: "",
       pricerangedisplay: "",
       booklink: "",
-      store_url: "",
+      // store_url: "",
       user_guid: "",
       course_codes: "",
       created_on: "",
       last_updated_on: "",
       file_code: "",
+      title_id: "",
   }
 }
 

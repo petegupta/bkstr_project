@@ -4,9 +4,9 @@ import ObjectsToCsv from "objects-to-csv";
 var bookstoreid = "";
 var storeid = "";
 var storeDispName = "";
-var termname = "Fall 2023";
+var termname = "spring-24";
 var campusname = "";
-var store_url = "https://nwc.textbooktech.com/";
+var store_url = "https://swau.textbooktech.com/textbooks";
 
 var row = [];
 
@@ -146,18 +146,12 @@ async function main() {
                             row.push({
                                 bookrow_id: "",
                                 bookstoreid: bookstoreid,
-                                storeid: storeid,
-                                storenumber: "",
-                                storedisplayname: storeDispName,
                                 termname: termname,
                                 campusname: campusname,
-                                department: deptCode,
                                 departmentname: deptName,
                                 coursename: courseName,
-                                section: "",
                                 sectionname: "",
                                 instructor: instructorName,
-                                schoolname: campusname,
                                 bookimage: bookImg,
                                 title: bookName,
                                 edition: edition,
@@ -166,16 +160,15 @@ async function main() {
                                 materialtype: "",
                                 requirementtype: bookRequired,
                                 publisher: publisherName,
-                                publishercode: "",
                                 copyrightyear: "",
                                 pricerangedisplay: price,
                                 booklink: "",
-                                store_url: store_url,
                                 user_guid: "",
                                 course_codes: "",
                                 created_on: dateTime,
                                 last_updated_on: dateTime,
-                                file_code: ""
+                                file_code: "",
+                                title_id: ""
                             })
                             CsvWriter(row)
                             row = [];
