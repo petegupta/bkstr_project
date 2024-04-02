@@ -24,10 +24,12 @@ const imgElements = document.querySelectorAll('img.loaded');
 const authorsElements = document.querySelectorAll('.authors');
 const depart = document.querySelectorAll('.course-results-header h2');
 
+
 // Example values (you can replace these with actual values)
+const bksid="";
 const storeid = "";
 const storeDispName = "southern-cross-university-scu";
-const termname = "Fall 2023";
+const termname = "spring-24";
 const campusname = "southern-cross-university";
 const deptCode = "";
 const deptName = depart;
@@ -38,6 +40,7 @@ const bookRequired = "";
 const publisherName = "";
 const price = salePriceElements;
 const store_url = "";
+
 
 // Ensure that all arrays have the same length
 const minLength = Math.min(
@@ -55,19 +58,14 @@ for (let index = 0; index < minLength; index++) {
 
     // Add your custom fields here
     const customFields = {
-    bookstoreid,
-    storeid,
-    storenumber: "",
-    storedisplayname: storeDispName,
+    bookrow_id:bksid,
+    bookstoreid:"",
     termname,
     campusname,
-    department: deptCode,
     departmentname: dpt,
     coursename: "",
-    section: "",
     sectionname: "",
     instructor: instructorName,
-    schoolname: campusname,
     bookimage: imgSrc,
     title:title,
     edition,
@@ -76,16 +74,15 @@ for (let index = 0; index < minLength; index++) {
     materialtype: "",
     requirementtype: bookRequired,
     publisher: publisherName,
-    publishercode: "",
     copyrightyear: "",
     pricerangedisplay: salePrice,
     booklink: "",
-    store_url,
     user_guid: "",
     course_codes: "",
     created_on: dateTime,
     last_updated_on: dateTime,
-    file_code: ""
+    file_code: "",
+    title_id: "",
     };
 
     // Push data for each item as an object

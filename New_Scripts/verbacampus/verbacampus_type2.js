@@ -6,7 +6,7 @@ let storeName = 'grinnell';
 var bookstoreid = "2900";
 var storeid = "";
 var storeDispName = storeName;
-var termname = "Fall 2023";
+var termname = "Spring-24";
 var campusname = "Grinnell College";
 
 let terms = [];
@@ -142,18 +142,12 @@ async function fetchData(csrfToken, cookies) {
                                                 row.push({
                                                     bookrow_id: "",
                                                     bookstoreid: bookstoreid,
-                                                    storeid: storeid,
-                                                    storenumber: "",
-                                                    storedisplayname: storeDispName,
-                                                    termname: termname,
+                                                    termname: "Spring-24",
                                                     campusname: campusname,
-                                                    department: deptCode,
                                                     departmentname: deptName,
                                                     coursename: courseName,
-                                                    section: sectionData,
                                                     sectionname: sectionName,
                                                     instructor: instructorName,
-                                                    schoolname: campusname,
                                                     bookimage: bookImg,
                                                     title: bookName,
                                                     edition: "",
@@ -162,16 +156,15 @@ async function fetchData(csrfToken, cookies) {
                                                     materialtype: "",
                                                     requirementtype: bookRequired,
                                                     publisher: "",
-                                                    publishercode: "",
                                                     copyrightyear: "",
                                                     pricerangedisplay: price,
                                                     booklink: "",
-                                                    store_url: store_url,
                                                     user_guid: "",
                                                     course_codes: "",
                                                     created_on: dateTime,
                                                     last_updated_on: dateTime,
-                                                    file_code: ""
+                                                    file_code: "",
+                                                    title_id: "",
                                                 })
                                             });
 

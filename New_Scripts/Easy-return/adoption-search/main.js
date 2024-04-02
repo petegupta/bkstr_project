@@ -3,10 +3,10 @@ import ObjectsToCsv from "objects-to-csv";
 
 let fullData = [];
 //Enter the following entries according to the google sheet entries of store that uses this return-easy script
-let code = 6283135;
-let storeName = "ncsu";
-let bookstore_id = 2742;
-let storeid = "B00143";
+let code = 4823301;
+let storeName = "usucampusstore";
+let bookstore_id = "";
+let storeid = "";
 
 let store_url = `https://shop.${storeName}.edu/`;
 
@@ -56,48 +56,29 @@ async function fetchData() {
                       fullData.push({
                         bookrow_id: "",
                         bookstoreid: bookstore_id,
-                        storeid: storeid,
-                        storenumber: "",
-                        storedisplayname: bookdetails[0].school,
-                        termid: termId,
-                        termname: termName,
-                        termnumber: "",
-                        programid: "",
-                        programname: "",
-                        campusid: "",
+                        termname: "spring-24",
                         campusname: "",
-                        department: "",
                         departmentname: departmentsName,
-                        division: "",
-                        divisionname: "",
-                        courseid: "",
                         coursename: CoursesName,
-                        section: sectionId,
                         sectionname: sectionName,
                         instructor: "",
-                        schoolname: bookdetails[0].school,
-                        cmid: "",
-                        mtcid: "",
                         bookimage: bookdetails[0].items[b].image,
                         title: bookdetails[0].items[b].longTitle,
                         edition: bookdetails[0].items[b].bookEdition,
                         author: bookdetails[0].items[b].bookAuthor,
                         isbn: bookdetails[0].items[b].isbn,
                         materialtype: "",
-                        requirementtype:
-                          bookdetails[0].items[b].courseMaterialRequirement,
+                        requirementtype: bookdetails[0].items[b].courseMaterialRequirement,
                         publisher: bookdetails[0].items[b].publisher,
-                        publishercode: "",
-                        publisherDate: " ",
-                        productcatentryid: "",
                         copyrightyear: bookdetails[0].items[b].copyrightDate,
                         pricerangedisplay: bookPrice,
                         booklink: "",
-                        store_url: store_url,
                         user_guid: "",
                         course_codes: "",
                         created_on: dateTime,
                         last_updated_on: dateTime,
+                        file_code: "",
+                        title_id: "",
                       });
                       console.log(
                         '"Found"',
@@ -118,28 +99,12 @@ async function fetchData() {
                     fullData.push({
                       bookrow_id: "",
                       bookstoreid: bookstore_id,
-                      storeid: storeid,
-                      storenumber: "",
-                      storedisplayname: bookdetails[0].school,
-                      termid: termId,
-                      termname: termName,
-                      termnumber: "",
-                      programid: "",
-                      programname: "",
-                      campusid: "",
+                      termname: "spring-24",
                       campusname: "",
-                      department: "",
                       departmentname: departmentsName,
-                      division: "",
-                      divisionname: "",
-                      courseid: "",
                       coursename: CoursesName,
-                      section: sectionId,
                       sectionname: sectionName,
                       instructor: "",
-                      schoolname: bookdetails[0].school,
-                      cmid: "",
-                      mtcid: "",
                       bookimage: "",
                       title: "",
                       edition: "",
@@ -148,17 +113,15 @@ async function fetchData() {
                       materialtype: "",
                       requirementtype: "",
                       publisher: "",
-                      publishercode: "",
-                      publisherDate: "",
-                      productcatentryid: "",
                       copyrightyear: "",
                       pricerangedisplay: "",
                       booklink: "",
-                      store_url: store_url,
                       user_guid: "",
                       course_codes: "",
                       created_on: dateTime,
                       last_updated_on: dateTime,
+                      file_code: "",
+                      title_id: "",
                     });
                     console.log(
                       '"Not Found"',
