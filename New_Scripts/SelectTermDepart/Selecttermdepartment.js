@@ -1,12 +1,12 @@
 import puppeteer from 'puppeteer';
 import ObjectsToCsv from 'objects-to-csv';
 
-var bookstoreid = "3653";
+var bookstoreid = "3799";
 var storeid = "";
 var storeDispName = "";
 var termname = "spring-24";
-var campusname = "Cisco College";
-var storeurl = "https://www.ciscocollegebookstore.com/SelectTermDept";
+var campusname = "Saint Paul College";
+var storeurl = "https://www.saintpaulcollegebookstore.com/selecttermdept";
 
 const parts = storeurl.split('/');
 const domain = parts[2];
@@ -43,8 +43,8 @@ var deptItems;
 var sectItems;
 
 
-const main = async() => {
-    const browser = await puppeteer.launch({headless:false});
+const main = async () => {
+    const browser = await puppeteer.launch({ headless: false });
     const page = await browser.newPage();
 
     try {
@@ -73,15 +73,16 @@ const main = async() => {
 
         for (i; i < itemTexts.length; i++) {
             try {
-                console.log(itemTexts[i]);
+                console.log("Term: " + itemTexts[i]);
                 const inputSelector = 'input.TermId';
                 const inputElement = await page.$(inputSelector);
                 if (inputElement) {
                     // Simulate a click to bring the input element into focus
                     const sh = itemTexts[i].slice(0, 3);
-                    await waitForTwoSecondsAsync()
+                    // await waitForTwoSecondsAsync()
+                    await page.waitForSelector(inputSelector);
                     await page.type(inputSelector, sh);
-                    await waitForTwoSecondsAsync()
+                    // await waitForTwoSecondsAsync()
                     await page.keyboard.press('Enter');
                     await page.waitForSelector('ul.dept_list li');
                 } else {
@@ -152,7 +153,7 @@ const main = async() => {
                             const inputElement = await page.$(inputSelector);
 
                             if (inputElement) {
-                                const ss = sectItems[s].slice(0, 8);
+                                const ss = sectItems[s].slice(0, 10);
                                 await waitForTwoSecondsAsync()
                                 await page.type(inputSelector, ss);
                                 await waitForTwoSecondsAsync()
@@ -165,7 +166,10 @@ const main = async() => {
                                 if (s == (sectItems.length - 1)) {
                                     cond = true;
                                     await page.click('#Get_Materials');
-                                    await page.waitForTimeout(2000);
+                                    // await page.waitForTimeout(2000);
+                                    // await page.waitForSelector('.Materials_Course', { visible: true });
+                                    await page.waitForNetworkIdle();
+                                    console.log('loaded');
 
 
 
@@ -318,7 +322,19 @@ const main = async() => {
                                     await client.send('Network.clearBrowserCookies');
 
                                     // Refresh the page to see the effects
-                                    await page.reload();
+                                    await page.reload({ waitUntil: ['domcontentloaded', 'networkidle0'] });
+                                    // await page.waitForNavigation({ waitUntil: 'domcontentloaded' });
+                                    await page.waitForTimeout(2000);
+                                    try {
+                                        await page.waitForSelector('[title="Widget containing a Cloudflare security challenge"]', { timeout: 2000 });
+                                        console.log('CAPTCHA detected. You need to solve it manually.');
+                                        await page.waitForNavigation({ waitUntil: 'domcontentloaded' });
+                                        await page.waitForSelector("#txtSearch");
+                                        console.log("page loaded");
+                                        // await page.waitForSelector('ul.dept_list');
+                                    } catch (error) {
+                                        console.log('No CAPTCHA detected. Page is fully loaded.');
+                                    }
 
                                     const linkSelector = '.deptId.dept_value';
 
