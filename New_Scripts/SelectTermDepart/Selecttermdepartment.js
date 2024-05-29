@@ -1,12 +1,13 @@
 import puppeteer from 'puppeteer';
 import ObjectsToCsv from 'objects-to-csv';
 
-var bookstoreid = "3799";
+var bookstoreid = "2810";
 var storeid = "";
 var storeDispName = "";
 var termname = "spring-24";
-var campusname = "Saint Paul College";
-var storeurl = "https://www.saintpaulcollegebookstore.com/selecttermdept";
+var campusname = "Muhlenberg College";
+var storeurl = "https://bergbookshop.com/SelectTermDept";
+var termIndex = 0;
 
 const parts = storeurl.split('/');
 const domain = parts[2];
@@ -33,7 +34,7 @@ var pubDate;
 var isbn;
 var allSection = "";
 
-var i = 0;
+var i = termIndex;
 var d = 0;
 var s = 0;
 var cond = true;
@@ -72,21 +73,28 @@ const main = async () => {
 
 
         for (i; i < itemTexts.length; i++) {
+            d = 0;
+            s = 0;
             try {
                 console.log("Term: " + itemTexts[i]);
+                termname = itemTexts[i];
                 const inputSelector = 'input.TermId';
                 const inputElement = await page.$(inputSelector);
                 if (inputElement) {
                     // Simulate a click to bring the input element into focus
                     const sh = itemTexts[i].slice(0, 3);
                     // await waitForTwoSecondsAsync()
+                    console.log("waiting for term input");
                     await page.waitForSelector(inputSelector);
+                    console.log("term completed");
                     await page.type(inputSelector, sh);
                     // await waitForTwoSecondsAsync()
                     await page.keyboard.press('Enter');
+                    console.log("waiting for dept input");
                     await page.waitForSelector('ul.dept_list li');
+                    console.log("dept completed");
                 } else {
-                    console.error('Input element not found.');
+                    console.error('term Input element not found.');
                 }
             } catch (error) {
                 console.log("termError: " + error);
@@ -97,7 +105,7 @@ const main = async () => {
                     return deptItem.map(item => item.textContent.trim());
                 });
             }
-            for (d; d < deptItems.length; d++) {
+            for (d; d < 1; d++) {
 
 
 
@@ -111,10 +119,12 @@ const main = async () => {
                             console.log("Department :", deptItems[d]);
                             deptName = deptItems[d];
                             s = 0;
+                            await page.waitForSelector("ul.dept_list li");
                             await page.type(inputSelector, deptItems[d]);
-                            await waitForTwoSecondsAsync()
+                            // await waitForTwoSecondsAsync()
+                            await page.waitForSelector("ul.dept_list li.order_hover_color_down_up");
                             await page.keyboard.press('Enter');
-                            await waitForTwoSecondsAsync()
+                            // await waitForTwoSecondsAsync()
                             await page.waitForSelector('ul.sect_list li');
                             sectItems = await page.$$eval('ul.sect_list li', sectItem => {
                                 return sectItem.map(item => item.textContent.trim());
@@ -127,9 +137,9 @@ const main = async () => {
                         if (inputElement) {
                             console.log("Department :", deptItems[d]);
                             await page.type(inputSelector, deptItems[d]);
-                            await waitForTwoSecondsAsync()
+                            // await waitForTwoSecondsAsync()
                             await page.keyboard.press('Enter');
-                            await waitForTwoSecondsAsync()
+                            // await waitForTwoSecondsAsync()
                             await page.waitForSelector('ul.sect_list li');
 
                         } else {
@@ -146,19 +156,39 @@ const main = async () => {
                     });
                 }
                 if (s < sectItems.length) {
-                    for (s; s < sectItems.length; s++) {
+                    for (s; s < 1; s++) {
                         try {
                             console.log("Section :", sectItems[s]);
                             const inputSelector = 'input.courseId';
                             const inputElement = await page.$(inputSelector);
 
                             if (inputElement) {
-                                const ss = sectItems[s].slice(0, 10);
-                                await waitForTwoSecondsAsync()
-                                await page.type(inputSelector, ss);
-                                await waitForTwoSecondsAsync()
+                                const sectLength = sectItems[s].length;
+                                for (let index = sectLength-4; index > 0; index -= 2) {
+                                    const ss = sectItems[s].slice(0, index);
+                                    // await waitForTwoSecondsAsync()
+                                    await page.type(inputSelector, ss);
+
+                                    try {
+                                        console.log("Waiting for section list...");
+                                        await page.waitForSelector('ul.sect_list li.order_hover_color_down_up', {timeout: 1000});
+                                        break;
+                                    } catch (error) {
+                                        const inputElements = await page.$$('input.sectInput');
+                                        const lastInputElement = inputElements[inputElements.length - 1];
+                                        const lastInputElementLength = await page.evaluate(element => element.value.length, lastInputElement);
+    
+                                        console.log(lastInputElementLength);
+                                        for (let i = 0; i < lastInputElementLength; i++) {
+                                            await page.keyboard.press('Backspace');
+                                        }
+                                    }
+                                }
+                                // await waitForTwoSecondsAsync()
+                                // await page.waitForSelector('ul.sect_list li');
                                 await page.keyboard.press('Enter');
-                                await waitForTwoSecondsAsync()
+                                await page.waitForSelector('ul.sect_list li');
+                                // await waitForTwoSecondsAsync()
                                 await page.keyboard.press('Enter');
 
 
@@ -168,7 +198,12 @@ const main = async () => {
                                     await page.click('#Get_Materials');
                                     // await page.waitForTimeout(2000);
                                     // await page.waitForSelector('.Materials_Course', { visible: true });
-                                    await page.waitForNetworkIdle();
+                                    try {
+                                        await page.waitForNetworkIdle({timeout: 5000});
+                                    } catch (error) {
+                                        console.log("loading error: "+ error);
+                                        await page.reload({ waitUntil: ['domcontentloaded', 'networkidle0'] });
+                                    }
                                     console.log('loaded');
 
 
@@ -310,6 +345,7 @@ const main = async () => {
                                         console.log("bookdetails error", error);
                                     }
 
+                                    console.log("completed");
 
 
                                     const cookies = await page.cookies();
@@ -336,15 +372,38 @@ const main = async () => {
                                         console.log('No CAPTCHA detected. Page is fully loaded.');
                                     }
 
-                                    const linkSelector = '.deptId.dept_value';
+                                    const termSelector = '.term_name.min-height25em.padding-top5.ordering_enabled';
 
-                                    await page.evaluate(linkSelector => {
-                                        const link = document.querySelectorAll(linkSelector);
-                                        if (link[1]) {
-                                            link[1].click();
+                                    await page.evaluate((termSelector) => {
+                                        const termLink = document.querySelectorAll(termSelector);
+                                        if (termLink[1]) {
+                                            termLink[1].click();
                                         }
-                                    }, linkSelector);
-                                    await page.waitForTimeout(2000);
+                                    }, termSelector);
+
+                                    console.log("Term: " + itemTexts[i]);
+                                    const inputSelector = 'input.TermId';
+                                    const inputElement = await page.$(inputSelector);
+                                    if (inputElement) {
+                                        const sh = itemTexts[i].slice(0, 3);
+                                        await page.waitForSelector(inputSelector);
+                                        await page.type(inputSelector, sh);
+                                        await page.waitForSelector(inputSelector);
+                                        await page.keyboard.press('Enter');
+                                        await page.waitForSelector('ul.dept_list li');
+                                    } else {
+                                        console.error('Input element not found.');
+                                    }
+
+                                    // const linkSelector = '.deptId.dept_value';
+                                    // const linkSelector = 'div.Dept_Name_Div';
+                                    // await page.evaluate((linkSelector) => {
+                                    //     const link = document.querySelectorAll(linkSelector);
+                                    //     if (link[1]) {
+                                    //         link[1].click();
+                                    //     }
+                                    // }, linkSelector);
+                                    await page.waitForSelector('ul.dept_list li');
                                 }
                                 s++;
                                 break;
@@ -385,13 +444,6 @@ async function CsvWriter(row) {
         })
         .then(console.log("Succesfully Data save into CSV"));
 }
-
-let today = new Date();
-let date =
-    today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
-let time =
-    today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-let dateTime = date + " " + time;
 
 
 main();
